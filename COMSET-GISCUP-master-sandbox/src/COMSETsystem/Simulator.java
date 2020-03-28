@@ -125,8 +125,8 @@ public class Simulator {
 	 * @param totalAgents The total number of agents to deploy
 	 * @param boundingPolygonKMLFile The KML file defining a bounding polygon of the simulated area
 	 * @param maximumLifeTime The maximum life time of a resource
-	 * @param agentPlacementSeed The see for the random number of generator when placing the agents
-	 * @param speedRudction The speed reduction to accommodate traffic jams and turn delays
+	 * @param agentPlacementRandomSeed The see for the random number of generator when placing the agents
+	 * @param speedReduction The speed reduction to accommodate traffic jams and turn delays
 	 */
 	public void configure(String mapJSONFile, String resourceFile, Long totalAgents, String boundingPolygonKMLFile, Long maximumLifeTime, long agentPlacementRandomSeed, double speedReduction) {
 
@@ -179,19 +179,16 @@ public class Simulator {
 
 	public void stableMarriage()
 	{
-		ArrayList<ArrayList<AgentEvent> > resPrefList =
-				new ArrayList<ArrayList<AgentEvent> >();
+		PriorityQueue<Map.Entry<Long, Long>> pq = new PriorityQueue<>((a,b) -> a.getValue()>b.getValue()?1:-1);
+		HashMap<Long,Long> currentArrivalTime=new HashMap<>();
+		ArrayList<HashMap<Long,Long> > resPrefList =
+				new ArrayList<HashMap<Long,Long> >();
 		for(Event event : events)
 		{
 			if(event.isResource())
 			{
-				event=(ResourceEvent)event;
-				AgentEvent bestAgent = null;
-				AgentEvent farAgent=null;
-				long farthest= Long.MIN_VALUE;
-				long earliest = Long.MAX_VALUE;
 				LocationOnRoad bestAgentLocationOnRoad = null;
-				ArrayList<AgentEvent> aList=new ArrayList<AgentEvent>(10);
+
 				for (AgentEvent agent : emptyAgents) {
 
 					// Calculate the travel time from the agent's current location to resource.
@@ -207,35 +204,29 @@ public class Simulator {
 					long travelTime = map.travelTimeBetween(agentLocationOnRoad, ((ResourceEvent) event).pickupLoc);
 					long arriveTime = travelTime +((ResourceEvent) event).time;
 
-					if (arriveTime < earliest)
-					{
-						bestAgent = agent;
-						earliest = arriveTime;
-						bestAgentLocationOnRoad = agentLocationOnRoad;
-						if(arriveTime>farthest)
-						{
-							farAgent=agent;
-							farthest=arriveTime;
-							System.out.println("$$$$#### Farthest agent time changed:"+farthest);
-						}
-						if(aList.size()==10)
-						{
-							aList.remove(farAgent);
-							aList.add(agent);
-							System.out.println("$$$$#### Removed agent:"+farAgent.id);
-							System.out.println("$$$$#### Added agent:"+agent.id);
-
-						}
-						else
-						{
-							aList.add(agent);
-							System.out.println("$$$$#### Added agent size list not yet full:"+farAgent.id+","+aList.size());
-						}
+					currentArrivalTime.put(agent.id,arriveTime);
+					//System.out.println(agent.id+","+arriveTime);
 
 					}
+					System.out.println("Reached here!");
+					pq.addAll(currentArrivalTime.entrySet());
+					currentArrivalTime.clear();
+					//System.out.println("####$$$ Resource pref list:");
+					for(int i=0;i<10;i++)
+					{
+						if(pq.isEmpty())
+							break;
+						Map.Entry<Long,Long> e=pq.poll();
+						currentArrivalTime.put(e.getKey(),e.getValue());
+						//System.out.print(" "+"("+e.getKey()+","+e.getValue()+")");
+					}
+
+					resPrefList.add(currentArrivalTime);
+					//System.out.println("####$$$$$Size:"+resPrefList.size());
 
 				}
-				resPrefList.add(aList);
+				System.out.println("####$$$$$Size:"+resPrefList.size());
+
 
 
 				/*
@@ -286,8 +277,8 @@ public class Simulator {
 				}
 				*/
 			}
-		}
 	}
+
 
 	/**
 	 * This method corresponds to running the simulation. An object of ScoreInfo
