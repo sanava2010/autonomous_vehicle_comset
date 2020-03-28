@@ -1,13 +1,14 @@
 package DataParsing;
 
+import MapCreation.MapCreator;
+
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Scanner;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.LocalDateTime;
-import MapCreation.MapCreator;
+import java.util.ArrayList;
+import java.util.Scanner;
 
 /**       
  * The CSVNewYorkParser class parses a New York TLC data file for a month before July of 2016.

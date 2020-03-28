@@ -1,15 +1,10 @@
 package UserExamples;
 
-import COMSETsystem.BaseAgent;
-import COMSETsystem.CityMap;
-import COMSETsystem.Intersection;
-import COMSETsystem.LocationOnRoad;
-import COMSETsystem.Road;
+import COMSETsystem.*;
 
-import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
+import java.util.*;
 /**
  * Random destination search algorithm:
  * After dropping off a resource, the agent chooses a random intersection on the map as the destination,

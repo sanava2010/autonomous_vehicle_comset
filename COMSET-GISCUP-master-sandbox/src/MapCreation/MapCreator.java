@@ -3,25 +3,13 @@ package MapCreation;
 import COMSETsystem.*;
 import DataParsing.GeoProjector;
 import DataParsing.KdTree;
-
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.Reader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
-import java.io.IOException;
-import java.util.Map;
-
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+
+import java.io.*;
+import java.util.*;
 
 /**
  * @author Robert van Barlingen

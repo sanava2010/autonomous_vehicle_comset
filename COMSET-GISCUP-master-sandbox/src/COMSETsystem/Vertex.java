@@ -1,8 +1,7 @@
 package COMSETsystem;
 
-import java.util.*;
 import java.awt.geom.Point2D;
-
+import java.util.*;
 /**
  * A Vertex object corresponds to a "node" element in an OSM JSON map.
  * @author Robert van Barlingen and Jeroen Schols

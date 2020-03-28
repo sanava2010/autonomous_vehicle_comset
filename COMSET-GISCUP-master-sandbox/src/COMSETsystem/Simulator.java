@@ -1,16 +1,10 @@
 package COMSETsystem;
 
-import MapCreation.*;
-
-import java.text.NumberFormat;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import me.tongfei.progressbar.*;
-
-
 import DataParsing.*;
+import MapCreation.*;
+import me.tongfei.progressbar.*;
+import java.util.*;
+import java.text.NumberFormat;
 
 /**
  * The Simulator class defines the major steps of the simulation. It is
@@ -95,6 +89,8 @@ public class Simulator {
 	// A list of all the agents in the system. Not really used in COMSET, but maintained for
 	// a user's debugging purposes.
 	ArrayList<BaseAgent> agents;
+
+	protected HungarianAlgorithm hg;//Snehal
 
 	// A class that extends BaseAgent and implements a search routing strategy
 	protected final Class<? extends BaseAgent> agentClass;
@@ -287,6 +283,65 @@ public class Simulator {
 				*/
 			}
 		}
+	}
+	public List<List<Long>> callHungarian(){
+	List<List<Long>> costMatrix = new ArrayList<List<Long>>();
+		List<Long> resAgent = new ArrayList<>();
+		for(Event event : events)
+		{
+			if(event.isResource())
+			{
+				resAgent = new ArrayList<>();//Snehal
+				event=(ResourceEvent)event;
+				AgentEvent bestAgent = null;
+				AgentEvent farAgent=null;
+				long farthest= Long.MIN_VALUE;
+				long earliest = Long.MAX_VALUE;
+				LocationOnRoad bestAgentLocationOnRoad = null;
+				ArrayList<AgentEvent> aList=new ArrayList<AgentEvent>(10);
+				for (AgentEvent agent : emptyAgents) {
+					long travelTimeToEndIntersection = agent.time - ((ResourceEvent) event).time;
+					long travelTimeFromStartIntersection = agent.loc.road.travelTime - travelTimeToEndIntersection;
+					LocationOnRoad agentLocationOnRoad = new LocationOnRoad(agent.loc.road, travelTimeFromStartIntersection);
+					long travelTime = map.travelTimeBetween(agentLocationOnRoad, ((ResourceEvent) event).pickupLoc);
+					long arriveTime = travelTime +((ResourceEvent) event).time;
+					resAgent.add(arriveTime);
+					if (arriveTime < earliest)
+					{
+						bestAgent = agent;
+						earliest = arriveTime;
+						bestAgentLocationOnRoad = agentLocationOnRoad;
+						if(arriveTime>farthest)
+						{
+							farAgent=agent;
+							farthest=arriveTime;
+							System.out.println("$$$$#### Farthest agent time changed:"+farthest);
+						}
+						if(aList.size()==10)
+						{
+							aList.remove(farAgent);
+							aList.add(agent);
+							System.out.println("$$$$#### Removed agent:"+farAgent.id);
+							System.out.println("$$$$#### Added agent:"+agent.id);
+
+						}
+						else
+						{
+							aList.add(agent);
+							System.out.println("$$$$#### Added agent size list not yet full:"+farAgent.id+","+aList.size());
+						}
+
+					}
+
+				}
+
+
+			}
+		}
+		costMatrix.add(resAgent);
+		System.out.println("##Hungarian - resource agent " + resAgent.size());
+		System.out.println("##Costmatrix - " + costMatrix.size());
+		return costMatrix;
 	}
 
 	/**

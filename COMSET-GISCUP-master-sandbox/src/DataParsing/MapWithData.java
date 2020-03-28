@@ -2,14 +2,10 @@ package DataParsing;
 
 import COMSETsystem.*;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.PriorityQueue;
 import java.util.Random;
-
-import org.apache.log4j.jmx.Agent;
 
 /**
  * The MapWithData class is responsible for loading a resource dataset file,

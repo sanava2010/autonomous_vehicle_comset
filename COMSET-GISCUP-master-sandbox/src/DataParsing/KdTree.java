@@ -1,9 +1,8 @@
 package DataParsing;
 
-import java.awt.geom.Point2D;
-import java.util.ArrayList;
-
 import COMSETsystem.*;
+
+import java.awt.geom.Point2D;
 
 /**
  * Modified from Michael <GrubenM@GMail.com>'s code (https://github.com/mgruben/Kd-Trees) to index 

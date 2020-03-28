@@ -1,7 +1,7 @@
 package COMSETsystem;
 
-import java.util.*;
 import java.awt.geom.Point2D;
+import java.util.*;
 
 /**
  * The Intersection class defines a vertex that connects different streets.
