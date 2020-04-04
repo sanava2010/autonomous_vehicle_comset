@@ -49,8 +49,8 @@ public class GeoProjector {
 
 	/**
 	 * Project a lat,lon location to 2D space
-	 * @param lat latitude 
-	 * @param lon longitude
+	 //* @param lat latitude
+	 //* @param lon longitude
 	 * @return projected 2D point 
 	 */		
 	public double[] toLatLon(double x, double y) {

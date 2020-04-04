@@ -16,8 +16,8 @@ import DataParsing.*;
  * The Simulator class defines the major steps of the simulation. It is
  * responsible for loading the map, creating the necessary number of agents,
  * creating a respective AgentEvent for each of them such that they are added
- * to the events PriorityQueue. Furthermore it is also responsible for dealing 
- * with the arrival of resources, map matching them to the map, and assigning  
+ * to the events PriorityQueue. Furthermore it is also responsible for dealing
+ * with the arrival of resources, map matching them to the map, and assigning
  * them to agents. This produces the score according to the scoring rules.
  * <p>
  * The time is simulated by the events having a variable time, this time
@@ -32,7 +32,7 @@ public class Simulator {
 	// The map that everything will happen on.
 	protected CityMap map;
 
-	// A deep copy of map to be passed to agents. 
+	// A deep copy of map to be passed to agents.
 	// This is a way to make map unmodifiable.
 	protected CityMap mapForAgents;
 
@@ -45,8 +45,8 @@ public class Simulator {
 	// The set of resources that with no agent assigned to it yet.
 	protected TreeSet<ResourceEvent> waitingResources = new TreeSet<>(new ResourceEventComparator());
 
-	// The maximum life time of a resource in seconds. This is a parameter of the simulator. 
-	public long ResourceMaximumLifeTime; 
+	// The maximum life time of a resource in seconds. This is a parameter of the simulator.
+	public long ResourceMaximumLifeTime;
 
 	// Full path to an OSM JSON map file
 	protected String mapJSONFile;
@@ -59,7 +59,7 @@ public class Simulator {
 	protected String boundingPolygonKMLFile;
 
 	// The simulation end time is the expiration time of the last resource.
-	protected long simulationEndTime; 
+	protected long simulationEndTime;
 
 	// Total trip time of all resources to which agents have been assigned.
 	protected long totalResourceTripTime = 0;
@@ -68,11 +68,11 @@ public class Simulator {
 	// since the resource is introduced to the system until it is picked up by an agent.
 	protected long totalResourceWaitTime = 0;
 
-	// Total search time of all agents. The search time of an agent for a research is the amount of time 
-	// since the agent is labeled as empty, i.e., added to emptyAgents, until it picks up a resource.  
+	// Total search time of all agents. The search time of an agent for a research is the amount of time
+	// since the agent is labeled as empty, i.e., added to emptyAgents, until it picks up a resource.
 	protected long totalAgentSearchTime = 0;
 
-	// Total cruise time of all agents. The cruise time of an agent for a research is the amount of time 
+	// Total cruise time of all agents. The cruise time of an agent for a research is the amount of time
 	// since the agent is labeled as empty until it is assigned to a resource.
 	protected long totalAgentCruiseTime = 0;
 
@@ -86,7 +86,7 @@ public class Simulator {
 	// The number of resources that have been introduced to the system.
 	protected long totalResources = 0;
 
-	// The number of agents that are deployed (at the beginning of the simulation). 
+	// The number of agents that are deployed (at the beginning of the simulation).
 	protected long totalAgents;
 
 	// The number of assignments that have been made.
@@ -113,14 +113,14 @@ public class Simulator {
 
 	/**
 	 * Configure the simulation system including:
-	 * 
+	 *
 	 * 1. Create a map from the map file and the bounding polygon KML file.
 	 * 2. Load the resource data set and map match.
-	 * 3. Create the event queue. 
+	 * 3. Create the event queue.
 	 *
 	 * See Main.java for detailed description of the parameters.
-	 * 
-	 * @param mapJSONFile The map file 
+	 *
+	 * @param mapJSONFile The map file
 	 * @param resourceFile The dataset file
 	 * @param totalAgents The total number of agents to deploy
 	 * @param boundingPolygonKMLFile The KML file defining a bounding polygon of the simulated area
@@ -151,7 +151,7 @@ public class Simulator {
 		// Pre-compute shortest travel times between all pairs of intersections.
 		System.out.println("Pre-computing all pair travel times...");
 		map.calcTravelTimes();
-
+		map.calcTravelDistances();
 		// Make a map copy for agents to use so that an agent cannot modify the map used by
 		// the simulator
 		mapForAgents = map.makeCopy();
@@ -183,6 +183,7 @@ public class Simulator {
 		HashMap<Long,Long> currentArrivalTime=new HashMap<>();
 		ArrayList<HashMap<Long,Long> > resPrefList =
 				new ArrayList<HashMap<Long,Long> >();
+		int a=1;
 		for(Event event : events)
 		{
 			if(event.isResource())
@@ -206,26 +207,33 @@ public class Simulator {
 
 					currentArrivalTime.put(agent.id,arriveTime);
 					//System.out.println(agent.id+","+arriveTime);
-
-					}
-					System.out.println("Reached here!");
-					pq.addAll(currentArrivalTime.entrySet());
-					currentArrivalTime.clear();
-					//System.out.println("####$$$ Resource pref list:");
-					for(int i=0;i<10;i++)
+					if(a==1)
 					{
-						if(pq.isEmpty())
-							break;
-						Map.Entry<Long,Long> e=pq.poll();
-						currentArrivalTime.put(e.getKey(),e.getValue());
-						//System.out.print(" "+"("+e.getKey()+","+e.getValue()+")");
+						a=0;
+						long distance=map.travelDistanceBetween(agentLocationOnRoad,((ResourceEvent) event).pickupLoc);
+						System.out.println("Roughly the distance is :"+distance);
+						
 					}
-
-					resPrefList.add(currentArrivalTime);
-					//System.out.println("####$$$$$Size:"+resPrefList.size());
 
 				}
-				System.out.println("####$$$$$Size:"+resPrefList.size());
+				System.out.println("Reached here!");
+				pq.addAll(currentArrivalTime.entrySet());
+				currentArrivalTime.clear();
+				//System.out.println("####$$$ Resource pref list:");
+				for(int i=0;i<10;i++)
+				{
+					if(pq.isEmpty())
+						break;
+					Map.Entry<Long,Long> e=pq.poll();
+					currentArrivalTime.put(e.getKey(),e.getValue());
+					//System.out.print(" "+"("+e.getKey()+","+e.getValue()+")");
+				}
+
+				resPrefList.add(currentArrivalTime);
+				//System.out.println("####$$$$$Size:"+resPrefList.size());
+
+			}
+			System.out.println("####$$$$$Size:"+resPrefList.size());
 
 
 
@@ -238,31 +246,23 @@ public class Simulator {
 					return this;
 				} else { // make assignment
 					// update the statistics
-
 					long cruiseTime = time - bestAgent.startSearchTime;
 					long approachTime = earliest - time;
 					long searchTime = cruiseTime + approachTime;
 					long waitTime = earliest - ((ResourceEvent) event).availableTime;
-
 					totalAgentCruiseTime += cruiseTime;
 					totalAgentApproachTime += approachTime;
 					totalAgentSearchTime += searchTime;
 					totalResourceWaitTime += waitTime;
 					totalResourceTripTime += ((ResourceEvent) event).tripTime;
 					totalAssignments++;
-
-
 					// Inform the assignment to the agent.
 					bestAgent.assignedTo(bestAgentLocationOnRoad, time, id, pickupLoc, dropoffLoc);
-
 					// "Label" the agent as occupied.
 					emptyAgents.remove(bestAgent);
-
 					events.remove(bestAgent);
 					Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Assigned to agent id = " + bestAgent.id + " currently at " + bestAgent.loc, this);
-
 					bestAgent.setEvent(earliest + tripTime, dropoffLoc, AgentEvent.DROPPING_OFF);
-
 					Logger.getLogger(this.getClass().getName()).log(Level.INFO, "From agent to resource = " + approachTime + " seconds.", this);
 					Logger.getLogger(this.getClass().getName()).log(Level.INFO, "From pickupLoc to dropoffLoc = " + tripTime + " seconds.", this);
 					Logger.getLogger(this.getClass().getName()).log(Level.INFO, "cruise time = " + cruiseTime + " seconds.", this);
@@ -270,13 +270,11 @@ public class Simulator {
 					Logger.getLogger(this.getClass().getName()).log(Level.INFO, "search time = " + searchTime + " seconds.", this);
 					Logger.getLogger(this.getClass().getName()).log(Level.INFO, "wait time = " + waitTime + " seconds.", this);
 					Logger.getLogger(this.getClass().getName()).log(Level.INFO, "Next agent trigger time = " + bestAgent.time, this);
-
-
 					// Add the event back to the event queue.
 					return bestAgent;
 				}
 				*/
-			}
+		}
 	}
 
 
@@ -300,7 +298,7 @@ public class Simulator {
 				Event toTrigger = events.poll();
 				pb.stepTo((long)(((float)(toTrigger.time - beginTime)) / (simulationEndTime - beginTime) * 100.0));
 				Event e = toTrigger.trigger();
-				if (e != null) { 
+				if (e != null) {
 					events.add(e);
 				}
 			}
@@ -317,7 +315,7 @@ public class Simulator {
 	 * This class is used to give a performance report and the score. It prints
 	 * the total running time of the simulation, the used memory and the score.
 	 * It uses Runtime which allows the application to interface with the
-	 * environment in which the application is running. 
+	 * environment in which the application is running.
 	 */
 	class ScoreInfo {
 
@@ -356,14 +354,14 @@ public class Simulator {
 			sb.append("Performance Report: " + "\n");
 			sb.append("free memory: " + format.format(freeMemory / 1024) + "\n");
 			sb.append("allocated memory: " + format.format(allocatedMemory / 1024)
-			+ "\n");
+					+ "\n");
 			sb.append("max memory: " + format.format(maxMemory / 1024) + "\n");
 
 			// still looking into this one "freeMemory + (maxMemory -
 			// allocatedMemory)"
 			sb.append("total free memory: "
 					+ format.format(
-							(freeMemory + (maxMemory - allocatedMemory)) / 1024)
+					(freeMemory + (maxMemory - allocatedMemory)) / 1024)
 					+ "\n");
 
 			System.out.print(sb.toString());
@@ -396,14 +394,14 @@ public class Simulator {
 			System.out.println("Agent class: " + agentClass.getName());
 
 			System.out.println("\n***Statistics***");
-		
+
 			if (totalResources != 0) {
 				// Collect the "search" time for the agents that are empty at the end of the simulation.
 				// These agents are in search status and therefore the amount of time they spend on
 				// searching until the end of the simulation should be counted toward the total search time.
 				long totalRemainTime = 0;
 				for (AgentEvent ae: emptyAgents) {
-					totalRemainTime += (simulationEndTime - ae.startSearchTime); 
+					totalRemainTime += (simulationEndTime - ae.startSearchTime);
 				}
 
 				sb.append("average agent search time: " + Math.floorDiv(totalAgentSearchTime + totalRemainTime, (totalAssignments + emptyAgents.size())) + " seconds \n");
@@ -429,7 +427,7 @@ public class Simulator {
 
 		/**
 		 * Checks if two agentEvents are the same by checking their ids.
-		 * 
+		 *
 		 * @param a1 The first agent event
 		 * @param a2 The second agent event
 		 * @return returns 0 if the two agent events are the same, 1 if the id of
@@ -452,7 +450,7 @@ public class Simulator {
 	class ResourceEventComparator implements Comparator<ResourceEvent> {
 		/**
 		 * Checks if two resourceEvents are the same by checking their ids.
-		 * 
+		 *
 		 * @param a1 The first resource event
 		 * @param a2 The second resource event
 		 * @return returns 0 if the two resource events are the same, 1 if the id of
@@ -471,7 +469,7 @@ public class Simulator {
 
 	/**
 	 * Retrieves the total number of agents
-	 * 
+	 *
 	 * @return {@code totalAgents }
 	 */
 	public long totalAgents() {
@@ -480,7 +478,7 @@ public class Simulator {
 
 	/**
 	 * Retrieves the CityMap instance of this simulation
-	 * 
+	 *
 	 * @return {@code map }
 	 */
 	public CityMap getMap() {
@@ -489,7 +487,7 @@ public class Simulator {
 
 	/**
 	 * Sets the events of the simulation.
-	 * 
+	 *
 	 * @param events The PriorityQueue of events
 	 */
 	public void setEvents(PriorityQueue<Event> events) {
@@ -498,7 +496,7 @@ public class Simulator {
 
 	/**
 	 * Retrieves the queue of events of the simulation.
-	 * 
+	 *
 	 * @return {@code events }
 	 */
 	public PriorityQueue<Event> getEvents() {
@@ -507,7 +505,7 @@ public class Simulator {
 
 	/**
 	 * Gets the empty agents in the simulation
-	 * 
+	 *
 	 * @return {@code emptyAgents }
 	 */
 	public TreeSet<AgentEvent> getEmptyAgents() {
@@ -516,7 +514,7 @@ public class Simulator {
 
 	/**
 	 * Sets the empty agents in the simulation
-	 * 
+	 *
 	 * @param emptyAgents The TreeSet of agent events to set.
 	 */
 	public void setEmptyAgents(TreeSet<AgentEvent> emptyAgents) {
@@ -525,9 +523,9 @@ public class Simulator {
 
 	/**
 	 * Make an agent copy of locationOnRoad so that an agent cannot modify the attributes of the road.
-	 * 
+	 *
 	 * @param locationOnRoad the location to make a copy for
-	 * @return an agent copy of the location 
+	 * @return an agent copy of the location
 	 */
 	public LocationOnRoad agentCopy(LocationOnRoad locationOnRoad) {
 		Intersection from = mapForAgents.intersections().get(locationOnRoad.road.from.id);

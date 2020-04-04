@@ -161,7 +161,7 @@ public class KdTree {
 	/**
 	 * A nearest neighbor in the group to point p; null if the group is empty.
 	 * 	  
-	 * @param link the link from which to search for a neighbor
+	 //* @param link the link from which to search for a neighbor
 	 * @return the nearest neighbor to the given link,
 	 *         {@code null} otherwise.
 	 * @throws NullPointerException if {@code link} is {@code null}
