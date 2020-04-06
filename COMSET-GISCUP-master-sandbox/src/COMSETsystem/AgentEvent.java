@@ -55,7 +55,7 @@ public class AgentEvent extends Event {
 	/**
 	 * Constructor for class AgentEvent.
 	 *
-	 * @param time when this agent starts search.
+	// * @param time when this agent starts search.
 	 * @param loc this agent's location when it becomes empty.
 	 */
 	public AgentEvent(LocationOnRoad loc, long startedSearch, Simulator simulator) {

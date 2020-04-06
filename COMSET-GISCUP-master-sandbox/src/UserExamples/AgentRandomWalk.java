@@ -5,9 +5,10 @@ import COMSETsystem.CityMap;
 import COMSETsystem.Intersection;
 import COMSETsystem.LocationOnRoad;
 
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.*;
+
 /**
  * Random walk search algorithm:
  * At each intersection choose a random adjacent intersection to go to.

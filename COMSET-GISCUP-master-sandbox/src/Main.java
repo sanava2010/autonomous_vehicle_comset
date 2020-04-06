@@ -1,5 +1,5 @@
 import COMSETsystem.BaseAgent;
-import COMSETsystem.HungarianAlgorithm;
+//import COMSETsystem.HungarianAlgorithm;
 import COMSETsystem.Simulator;
 
 import java.io.FileInputStream;
@@ -101,12 +101,16 @@ public class Main {
 			simulator.configure(mapJSONFile, datasetFile, numberOfAgents, boundingPolygonKMLFile, resourceMaximumLifeTime, agentPlacementSeed, speedReduction);
 
 
-			//simulator.stableMarriage();
+			simulator.stableMarriage();
+
+			/*
             List<List<Long>> costMatrix = new ArrayList<List<Long>>();
             costMatrix = simulator.callHungarian();
             double[][] array = costMatrix.stream().map(l->l.stream().mapToDouble(i->i).toArray()).toArray(double[][]::new);
             double cost= HungarianAlgorithm.hgAlgorithm(array,"max");
             System.out.println(cost);
+
+			 */
 			simulator.run();
 
 		} catch (Exception ex) {

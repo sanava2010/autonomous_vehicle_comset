@@ -1,5 +1,5 @@
 package COMSETsystem;
-import java.util.*;
+
 /**
  * Location on a road represented by the travel time from the start intersection of the road.
  */

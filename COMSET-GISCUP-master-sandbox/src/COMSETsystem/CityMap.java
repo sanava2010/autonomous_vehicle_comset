@@ -1,16 +1,29 @@
 package COMSETsystem;
 
-import DataParsing.GeoProjector;
-import DataParsing.KdTree;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Set;
+import java.util.TreeMap;
+
 import com.google.common.collect.ImmutableList;
 import net.iakovlev.timeshape.TimeZoneEngine;
+import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
+import DataParsing.GeoProjector;
+import DataParsing.KdTree;
+
+import java.util.PriorityQueue;
 import java.awt.geom.Point2D;
 import java.time.ZoneId;
-import java.util.*;
-import java.util.*;
+
 
 /**
  * The CityMap represents the map of a city.

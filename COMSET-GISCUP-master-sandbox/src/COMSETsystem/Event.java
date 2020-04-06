@@ -1,5 +1,5 @@
 package COMSETsystem;
-import java.util.*;
+
 /**
  *
  * @author TijanaKlimovic
@@ -28,7 +28,7 @@ public abstract class Event implements Comparable<Event> {
 	/**
 	 * Constructor for class Event
 	 *
-	 * @param id the unique id among all events
+	 //* @param id the unique id among all events
 	 * @param time core to this class, indicates when this event will trigger.
 	 * @param simulator a reference to simulator
 	 */
@@ -67,8 +67,8 @@ public abstract class Event implements Comparable<Event> {
 			System.exit(1);
 			return 0;
 		}
-	}
 
+	}
 	abstract Boolean isResource();
 }
 
